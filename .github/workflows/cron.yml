@@ -1,0 +1,31 @@
+name: Cron Diario Ajedrez
+
+on:
+  schedule:
+    # 0 13 * * * equivale exactamente a las 9:00 AM de Venezuela (UTC-4)
+    - cron: '0 13 * * *'
+  
+  # Te permite probar el botón manualmente cuando quieras
+  workflow_dispatch:
+
+jobs:
+  consultar_php:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Configurar Google Chrome real
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: stable
+
+    - name: Consultar archivo PHP saltando aes.js
+      run: |
+        # Lanzamos Chrome invisible apuntando a tu archivo PHP
+        chrome --headless --disable-gpu --no-sandbox "https://ajedrez.gamer.free/cron.php" &
+        
+        # Esperamos 20 segundos para que pase el aes.js y el hosting procese tu archivo PHP
+        sleep 20
+        
+        # Cerramos el navegador de forma segura
+        pkill chrome
+        echo "Consulta al archivo PHP realizada con éxito a las 9:00 AM de Venezuela."
