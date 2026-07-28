@@ -3,7 +3,7 @@ name: Cron Diario Ajedrez
 on:
   schedule:
     # 0 13 * * * equivale exactamente a las 9:00 AM de Venezuela (UTC-4)
-    - cron: '0 13 * * *'
+    - cron: '17 13 * * *'
   
   # Te permite probar el botón manualmente cuando quieras
   workflow_dispatch:
