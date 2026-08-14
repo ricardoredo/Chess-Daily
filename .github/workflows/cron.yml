@@ -2,10 +2,11 @@ name: Cron Diario Ajedrez
 
 on:
   schedule:
-    # 0 13 * * * equivale exactamente a las 9:00 AM de Venezuela (UTC-4)
+    # 17 8 * * * equivale a las 8:17 AM de Venezuela (UTC-4)
+    # Nota: GitHub Actions puede demorar unos minutos en iniciar el flujo según la carga de sus servidores.
     - cron: '17 8 * * *'
   
-  # Te permite probar el botón manualmente cuando quieras
+  # Te permite probar el flujo manualmente desde la pestaña Actions
   workflow_dispatch:
 
 jobs:
@@ -14,18 +15,30 @@ jobs:
 
     steps:
     - name: Configurar Google Chrome real
-      uses: browser-actions/setup-chrome@v1
+      uses: browser-actions/setup-chrome@v3
       with:
         chrome-version: stable
 
-    - name: Consultar archivo PHP saltando aes.js
-      run: |
-        # Lanzamos Chrome invisible apuntando a tu archivo PHP
-        chrome --headless --disable-gpu --no-sandbox "https://ajedrez.gamer.free/cron.php" &
-        
-        # Esperamos 20 segundos para que pase el aes.js y el hosting procese tu archivo PHP
-        sleep 20
-        
-        # Cerramos el navegador de forma segura
-        pkill chrome
-        echo "Consulta al archivo PHP realizada con éxito a las 9:00 AM de Venezuela."
+    - name: Consultar archivo PHP con reintentos automáticos
+      uses: nick-fields/retry@v3
+      with:
+        timeout_minutes: 2
+        max_attempts: 3
+        retry_on: error
+        command: |
+          echo "Iniciando intento de consulta..."
+          
+          # Ejecuta Chrome, espera que actúe aes.js y guarda el HTML final procesado
+          chrome --headless --disable-gpu --no-sandbox --dump-dom "https://ajedrez.gamer.free/cron.php" > resultado.html
+          
+          # Pequeña pausa para asegurar la escritura completa del archivo
+          sleep 3
+          
+          # VALIDACIÓN: Si el archivo está vacío o si la palabra aes.js sigue presente,
+          # significa que la protección bloqueó la petición o el hosting falló.
+          if grep -q "aes.js" resultado.html || [ ! -s resultado.html ]; then
+            echo "ERROR: El salto de aes.js falló o el hosting no respondió correctamente."
+            exit 1
+          fi
+          
+          echo "Consulta al archivo realizada con éxito."
