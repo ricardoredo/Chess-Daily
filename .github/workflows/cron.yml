@@ -15,24 +15,24 @@ jobs:
 
     steps:
     - name: Configurar Google Chrome real
-      uses: browser-actions/setup-chrome@v3
+      uses: browser-actions/setup-chrome@v2
       with:
         chrome-version: stable
 
     - name: Consultar archivo PHP con reintentos automáticos
       uses: nick-fields/retry@v3
       with:
-        timeout_minutes: 2
+        timeout_minutes: 5
         max_attempts: 3
         retry_on: error
         command: |
           echo "Iniciando intento de consulta..."
           
-          # Ejecuta Chrome, espera que actúe aes.js y guarda el HTML final procesado
-          chrome --headless --disable-gpu --no-sandbox --dump-dom "https://ajedrez.gamer.free/cron.php" > resultado.html
+          # Se añade --timeout=60000 (60 segundos) para que Chrome espere con paciencia la respuesta de InfinityFree
+          chrome --headless --disable-gpu --no-sandbox --timeout=60000 --dump-dom "https://ajedrez.gamer.free/cron.php" > resultado.html
           
-          # Pequeña pausa para asegurar la escritura completa del archivo
-          sleep 3
+          # Pausa de seguridad para asegurar la escritura completa del archivo HTML
+          sleep 5
           
           # VALIDACIÓN: Si el archivo está vacío o si la palabra aes.js sigue presente,
           # significa que la protección bloqueó la petición o el hosting falló.
@@ -41,4 +41,4 @@ jobs:
             exit 1
           fi
           
-          echo "Consulta al archivo realizada con éxito."
+          echo "Consulta al archivo cron.php realizada con éxito."
