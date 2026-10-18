@@ -1,0 +1,17 @@
+name: Mantener Repositorio Activo
+
+on:
+  schedule:
+    # Se ejecuta todos los miércoles a las 00:00 UTC para simular actividad
+    - cron: '0 0 * * 3'
+  workflow_dispatch: # Esto te permite activarlo manualmente cuando quieras
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prevenir desactivacion por inactividad
+        uses: gautamkrishnar/keepalive-workflow@v3
