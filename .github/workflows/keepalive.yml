@@ -4,7 +4,7 @@ on:
   schedule:
     # Se ejecuta todos los miércoles a las 00:00 UTC
     - cron: '0 0 * * 3'
-  workflow_dispatch: # Permite activarlo manualmente para probar
+  workflow_dispatch: # Permite activarlo manualmente desde la pestaña Actions
 
 jobs:
   keepalive:
@@ -17,11 +17,15 @@ jobs:
 
       - name: Hacer un micro-cambio nativo
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.email "github-actions[bot]@://github.com"
           git config --local user.name "github-actions[bot]"
-          # Crea o modifica un archivo oculto con la fecha actual
-          echo "Ultima actualizacion automatica: $(date)" > .github/keepalive_ping.txt
-          # Registra y sube el cambio de forma normal
+          
+          # Agrega la fecha actual al final del archivo sin borrar lo anterior
+          echo "Ultima actualizacion automatica: $(date)" >> .github/keepalive_ping.txt
+          
           git add .github/keepalive_ping.txt
-          git commit -m "Chore: Mantener repositorio despierto"
+          
+          # El argumento --allow-empty evita errores si el archivo no cambia
+          git commit --allow-empty -m "Chore: Mantener repositorio despierto"
+          
           git push origin main
