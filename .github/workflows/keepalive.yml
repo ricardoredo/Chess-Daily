@@ -2,19 +2,21 @@ name: Mantener Repositorio Activo
 
 on:
   schedule:
-    # Se ejecuta todos los miércoles a las 00:00 UTC para simular actividad
+    # Se ejecuta todos los miércoles a las 00:00 UTC
     - cron: '0 0 * * 3'
   workflow_dispatch: # Permite activarlo manualmente cuando quieras
 
 jobs:
   keepalive:
-    runs-on: ubuntu-latest
+    # Cambiamos a 'ubuntu-24.04' para eliminar la advertencia de GitHub por completo
+    runs-on: ubuntu-24.04
     permissions:
-      contents: write  # Otorga el permiso necesario para escribir el commit
+      contents: write 
     steps:
       - uses: actions/checkout@v4
       - name: Prevenir desactivacion por inactividad
         uses: gautamkrishnar/keepalive-workflow@v3
         with:
-          use_api: false # Desactivamos la API para usar el método de commit vacío
+          # Forzamos el uso de commits vacíos para saltar el bloqueo de la API
+          use_api: false
           
