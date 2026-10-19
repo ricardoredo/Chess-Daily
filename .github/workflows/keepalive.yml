@@ -2,21 +2,19 @@ name: Mantener Repositorio Activo
 
 on:
   schedule:
-    # Se ejecuta todos los miércoles a las 00:00 UTC
     - cron: '0 0 * * 3'
-  workflow_dispatch: # Permite activarlo manualmente cuando quieras
+  workflow_dispatch: 
 
 jobs:
   keepalive:
-    # Cambiamos a 'ubuntu-24.04' para eliminar la advertencia de GitHub por completo
     runs-on: ubuntu-24.04
-    permissions:
-      contents: write 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Usamos tu Token personal para autenticar el clonado y la subida
+          token: ${{ secrets.MIPROPIO_TOKEN }}
+          
       - name: Prevenir desactivacion por inactividad
         uses: gautamkrishnar/keepalive-workflow@v3
         with:
-          # Forzamos el uso de commits vacíos para saltar el bloqueo de la API
           use_api: false
-          
