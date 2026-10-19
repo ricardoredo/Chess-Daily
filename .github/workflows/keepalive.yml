@@ -2,19 +2,26 @@ name: Mantener Repositorio Activo
 
 on:
   schedule:
+    # Se ejecuta todos los miércoles a las 00:00 UTC
     - cron: '0 0 * * 3'
-  workflow_dispatch: 
+  workflow_dispatch: # Permite activarlo manualmente para probar
 
 jobs:
   keepalive:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write # Permiso nativo para escribir en tu propio repositorio
     steps:
-      - uses: actions/checkout@v4
-        with:
-          # Usamos tu Token personal para autenticar el clonado y la subida
-          token: ${{ secrets.MIPROPIO_TOKEN }}
-          
-      - name: Prevenir desactivacion por inactividad
-        uses: gautamkrishnar/keepalive-workflow@v3
-        with:
-          use_api: false
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Hacer un micro-cambio nativo
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          # Crea o modifica un archivo oculto con la fecha actual
+          echo "Ultima actualizacion automatica: $(date)" > .github/keepalive_ping.txt
+          # Registra y sube el cambio de forma normal
+          git add .github/keepalive_ping.txt
+          git commit -m "Chore: Mantener repositorio despierto"
+          git push origin main
