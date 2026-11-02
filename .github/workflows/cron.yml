@@ -2,9 +2,9 @@ name: Cron Diario Ajedrez
 
 on:
   schedule:
-    # 17 7 * * * equivale a las 7:17 AM de Venezuela (UTC-4)
+    # 17 8 * * * equivale a las 8:17 AM de Venezuela (UTC-4)
     # Nota: GitHub Actions puede demorar unos minutos en iniciar el flujo según la carga de sus servidores.
-    - cron: '17 7 * * *'
+    - cron: '17 8 * * *'
   
   # Te permite probar el flujo manualmente desde la pestaña Actions
   workflow_dispatch:
